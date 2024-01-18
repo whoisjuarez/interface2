@@ -93,7 +93,7 @@ function patternTest(regex, msg) {
 async function callJSONData(msg) {
    const response = await fetch("assets/data/data.json");
    const jsonData = await response.json();
-   console.log(jsonData);
+   // console.log(jsonData);
 
    if(jsonData.length !== 0) {
       jsonData.forEach((item, index) => {
@@ -101,10 +101,9 @@ async function callJSONData(msg) {
 
          if(patternTest(regex, msg)) {
             let randomize = Math.floor(Math.random() * item.answer.length);
-            console.log("Match: " + item.answer[randomize]);
+            // console.log("Match: " + item.answer[randomize]);
             
             speakThis(item.answer[randomize]);
-            // speechBubble.innerHTML = `${item.answer[randomize]}`; 
             speechBubble.innerHTML = item.answer[randomize];
             speechBubble.style.opacity = "1";
             weHaveAMacth = true;
@@ -165,27 +164,36 @@ setInterval(() => {
    // Hunger
    console.log(hungryRand + " : " + isHungry);
    if (hungryRand == 7 && !isHungry) {
-      isHungry = true;
-      mood = .69;
-      statusHungry.style.display = "block";
-      mouthTalk.style.opacity = "1";
-      eyeBrowLeft.setAttribute('transform', `rotate(15, ${cxLeft}, ${cyLeft})`);
-      eyeBrowRight.setAttribute('transform', `rotate(-15, ${cxRight}, ${cyRight})`);
+      console.log("Alien is hungry");
+
+      if (!isBored) {
+         isHungry = true;
+         mood = .69;
+         statusHungry.style.display = "block";
+         mouthTalk.style.opacity = "1";
+         eyeBrowLeft.setAttribute('transform', `rotate(15, ${cxLeft}, ${cyLeft})`);
+         eyeBrowRight.setAttribute('transform', `rotate(-15, ${cxRight}, ${cyRight})`);
+      }
    }else{
-      hungryRand = Math.floor(Math.random() * 40);
+      hungryRand = Math.floor(Math.random() * 50);
+
    }
 
    // Bored
    console.log(boredRand + " : " + isBored);
    if (boredRand == 17 && !isBored) {
-      isBored = true;
-      mood = .69;
-      statusBored.style.display = "block";
-      mouthTalk.style.opacity = "1";
-      eyeBrowLeft.setAttribute('transform', `rotate(-15, ${cxLeft}, ${cyLeft})`);
-      eyeBrowRight.setAttribute('transform', `rotate(15, ${cxRight}, ${cyRight})`);
+      console.log("Alien is bored");
+      
+      if (!isHungry) {
+         isBored = true;
+         mood = .69;
+         statusBored.style.display = "block";
+         mouthTalk.style.opacity = "1";
+         eyeBrowLeft.setAttribute('transform', `rotate(-15, ${cxLeft}, ${cyLeft})`);
+         eyeBrowRight.setAttribute('transform', `rotate(15, ${cxRight}, ${cyRight})`);
+      }
    }else{
-      boredRand = Math.floor(Math.random() * 50);
+      boredRand = Math.floor(Math.random() * 60);
    }
 
    if (mood >= 1) {
@@ -200,6 +208,8 @@ setInterval(() => {
 // Food btn
 let feedSound = new Audio("assets/sound/wet-sloppy-eating.mp3");
 const feed = () => {
+   isHungry = false;
+   mood = 2;
    statusHungry.style.display = "none";
    foodBrain.style.display = "block";
    setTimeout(() => {
@@ -215,12 +225,16 @@ const feed = () => {
       speechBubble.style.opacity = "1";
    }, 2000);
    
-   mood = 2;
+   isBored = false;
+   statusBored.style.display = "none";
+   mouthTalk.style.opacity = "0";
 }
 
 // Play btn
 let playSound = new Audio("assets/sound/laser-blaster.mp3");
 const play = () => {
+   isBored = false;
+   mood = 1.5;
    statusBored.style.display = "none";
    playGun.style.display = "block";
    setTimeout(() => {
@@ -236,7 +250,9 @@ const play = () => {
       speechBubble.style.opacity = "1";
    }, 800);
    
-   mood = 1.5;
+   isHungry = false;
+   statusHungry.style.display = "none";
+   mouthTalk.style.opacity = "0";
 }
 
 // Learn btn
@@ -253,6 +269,8 @@ const learn = () => {
    speechBubble.innerHTML = msg;
    speechBubble.style.opacity = "1";
 
+   isBored = false;
+   isHungry = false;
    mood = 1.5;
    statusBored.style.display = "none";
 
